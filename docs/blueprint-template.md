@@ -110,7 +110,7 @@
 
 ### Đào Văn Công - 2A202600031
 - [TASKS_COMPLETED]: C + F : SLO + Alerts, Blueprint orchestration, Demo coordination, & Evidence reporting
-- [EVIDENCE_LINK]: [docs/demo-script.md](docs/demo-script.md)
+- [EVIDENCE_LINK]: https://github.com/tranxuantruongworld/C401-D5-2-Day13/commit/b4e058b
 ---
 
 ## 6. Bonus Items (Optional)
