@@ -6,7 +6,7 @@ from uuid import UUID
 
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
-from langfuse import get_client, observe
+from langfuse import Langfuse, get_client, observe
 from sqlmodel import Session, SQLModel, create_engine, select
 from structlog.contextvars import bind_contextvars
 
@@ -22,12 +22,13 @@ from app.models import (
     Ticket,
     TicketStatus,
 )
-from app.pii import hash_user_id
+from app.pii import hash_user_id, scrub_text
 
 load_dotenv()
 
 configure_logging()
 
+Langfuse(mask=scrub_text)
 
 logger = get_logger()
 
@@ -109,7 +110,7 @@ def create_ticket(
     # Link all future traces for this ticket into one session
     langfuse.update_current_generation(
         name='new_ticket',
-        metadata={'correlation_id': str(ticket.id), 'user_id': customer_email},
+        metadata={'correlation_id': str(ticket.id), 'user_id': hash_user_id(customer_email)},
     )
 
     # Initialize the thread relationship
