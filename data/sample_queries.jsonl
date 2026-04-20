@@ -1,11 +1,15 @@
-{"user_id":"u01","session_id":"s01","feature":"qa","message":"What is your refund policy? My email is student@vinuni.edu.vn"}
-{"user_id":"u02","session_id":"s02","feature":"qa","message":"Explain why metrics traces and logs work together"}
-{"user_id":"u03","session_id":"s03","feature":"summary","message":"Summarize the monitoring policy for production logging"}
-{"user_id":"u04","session_id":"s04","feature":"qa","message":"Can I get help with policy and monitoring?"}
-{"user_id":"u05","session_id":"s05","feature":"qa","message":"Here is my phone 0987654321, what should be logged?"}
-{"user_id":"u06","session_id":"s06","feature":"summary","message":"Give me a short summary of the observability workflow"}
-{"user_id":"u07","session_id":"s07","feature":"qa","message":"What should not appear in app logs?"}
-{"user_id":"u08","session_id":"s08","feature":"qa","message":"How do I debug tail latency?"}
-{"user_id":"u09","session_id":"s09","feature":"qa","message":"What is the policy for PII and credit card 4111 1111 1111 1111?"}
-{"user_id":"u10","session_id":"s10","feature":"qa","message":"How should alerts be designed?"}
-
+{"customer_email":"dev_vision@ctu.edu.vn","content":"How to benchmark YOLOv12 latency on RTX 3050?","category":"technical"}
+{"customer_email":"ai_intern@vinai.io","content":"Best quantization strategy for TensorRT: INT8 or FP16?","category":"technical"}
+{"customer_email":"linux_fan@ubuntu.org","content":"Fixing NVIDIA driver issues on Ubuntu 24.04 LTS after update.","category":"technical"}
+{"customer_email":"student_h@student.ctu.edu.vn","content":"Explain the difference between ThreadPoolExecutor and ProcessPoolExecutor for I/O tasks.","category":"technical"}
+{"customer_email":"robotics_guy@lab.net","content":"Deploying YOLOv10 on ESP32-S3-CAM with limited RAM.","category":"technical"}
+{"customer_email":"agri_tech@delta.vn","content":"Custom board configuration for Arduino Nano in AIoT projects.","category":"technical"}
+{"customer_email":"luck_winner@scam.vn","content":"You have 1 new message! Claim your reward of 5,000,000 VND now!","category":"spam"}
+{"customer_email":"bank_verify@phishing.com","content":"Urgent: Your account password has expired. Click here to reset.","category":"spam"}
+{"customer_email":"sales@cheap-services.net","content":"Buy 1000 followers for your social media only for $5!","category":"spam"}
+{"customer_email":"customer_001@gmail.com","content":"The product I received is a different color from the photo. I want a refund.","category":"refund"}
+{"customer_email":"shopper_99@yahoo.com","content":"Delivery is 5 days late, please cancel my order and refund the money.","category":"refund"}
+{"customer_email":"tech_buyer@outlook.com","content":"The webcam is not working on my Dell laptop, I want to return it.","category":"refund"}
+{"customer_email":"parallel_dev@dev.to","content":"Does GIL affect ThreadPoolExecutor performance in Python 3.12?","category":"technical"}
+{"customer_email":"docker_master@io.com","content":"Writing a optimized Dockerfile for FastAPI with multi-stage build.","category":"technical"}
+{"customer_email":"vision_transformer@research.edu","content":"Is ViT better than YOLO for real-time edge detection?","category":"technical"}
