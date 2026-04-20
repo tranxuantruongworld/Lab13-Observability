@@ -11,7 +11,7 @@ from structlog.typing import EventDict
 
 from .pii import scrub_text
 
-LOG_PATH = Path(os.getenv("LOG_PATH", "data/logs.jsonl"))
+LOG_PATH = Path(os.getenv('LOG_PATH', 'data/logs.jsonl'))
 
 
 class JsonlFileProcessor:
@@ -34,36 +34,36 @@ class JsonlFileProcessor:
         return event_dict
 
 
-
 def scrub_event(_: Any, __: str, event_dict: EventDict) -> EventDict:
-    if "payload" in event_dict:
-        event_dict["payload"] = scrub_text(event_dict["payload"])
-    if "event" in event_dict and isinstance(event_dict["event"], str):
-        event_dict["event"] = scrub_text(event_dict["event"])
+    if 'payload' in event_dict:
+        event_dict['payload'] = scrub_text(event_dict['payload'])
+    if 'event' in event_dict and isinstance(event_dict['event'], str):
+        event_dict['event'] = scrub_text(event_dict['event'])
     return event_dict
 
 
-
 def add_enrichment_fields(_: object, __: str, event_dict: EventDict) -> EventDict:
-    event_dict.setdefault("user_id_hash", None)
-    event_dict.setdefault("session_id", None)
-    event_dict.setdefault("feature", None)
-    event_dict.setdefault("model", None)
+    event_dict.setdefault('user_id_hash', None)
+    event_dict.setdefault('session_id', None)
+    event_dict.setdefault('feature', None)
+    event_dict.setdefault('model', None)
     return event_dict
 
 
 def add_service_name(_: object, __: str, event_dict: EventDict) -> EventDict:
-    event_dict["service"] = "api"
+    event_dict['service'] = 'api'
     return event_dict
 
 
 def configure_logging() -> None:
-    logging.basicConfig(format="%(message)s", level=getattr(logging, os.getenv("LOG_LEVEL", "INFO")))
+    logging.basicConfig(
+        format='%(message)s', level=getattr(logging, os.getenv('LOG_LEVEL', 'INFO'))
+    )
     structlog.configure(
         processors=[
             merge_contextvars,
             structlog.processors.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso", utc=True, key="ts"),
+            structlog.processors.TimeStamper(fmt='iso', utc=True, key='ts'),
             add_service_name,
             add_enrichment_fields,
             scrub_event,
@@ -75,7 +75,6 @@ def configure_logging() -> None:
         wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
         cache_logger_on_first_use=True,
     )
-
 
 
 def get_logger() -> structlog.typing.FilteringBoundLogger:
