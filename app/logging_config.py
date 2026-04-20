@@ -7,6 +7,7 @@ from typing import Any
 
 import structlog
 from structlog.contextvars import merge_contextvars
+from structlog.typing import EventDict
 
 from .pii import scrub_text
 
@@ -14,16 +15,27 @@ LOG_PATH = Path(os.getenv("LOG_PATH", "data/logs.jsonl"))
 
 
 class JsonlFileProcessor:
-    def __call__(self, logger: Any, method_name: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+    def __init__(self):
+        self._renderer = structlog.processors.JSONRenderer()
+
+    def __call__(
+        self,
+        logger: object,
+        method_name: str,
+        event_dict: EventDict,
+    ) -> EventDict:
         LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-        rendered = structlog.processors.JSONRenderer()(logger, method_name, event_dict)
-        with LOG_PATH.open("a", encoding="utf-8") as f:
-            f.write(rendered + "\n")
+        rendered = self._renderer(logger, method_name, event_dict)
+        with LOG_PATH.open('a', encoding='utf-8') as f:
+            if isinstance(rendered, str):
+                f.write(rendered + '\n')
+            elif isinstance(rendered, bytes):
+                f.write(rendered.decode('utf-8') + '\n')
         return event_dict
 
 
 
-def scrub_event(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+def scrub_event(_: Any, __: str, event_dict: EventDict) -> EventDict:
     payload = event_dict.get("payload")
     if isinstance(payload, dict):
         event_dict["payload"] = {
@@ -35,6 +47,19 @@ def scrub_event(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
 
 
 
+def add_enrichment_fields(_: object, __: str, event_dict: EventDict) -> EventDict:
+    event_dict.setdefault("user_id_hash", None)
+    event_dict.setdefault("session_id", None)
+    event_dict.setdefault("feature", None)
+    event_dict.setdefault("model", None)
+    return event_dict
+
+
+def add_service_name(_: object, __: str, event_dict: EventDict) -> EventDict:
+    event_dict["service"] = "api"
+    return event_dict
+
+
 def configure_logging() -> None:
     logging.basicConfig(format="%(message)s", level=getattr(logging, os.getenv("LOG_LEVEL", "INFO")))
     structlog.configure(
@@ -42,7 +67,8 @@ def configure_logging() -> None:
             merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso", utc=True, key="ts"),
-            # TODO: Register your PII scrubbing processor here
+            add_service_name,
+            add_enrichment_fields,
             scrub_event,
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
