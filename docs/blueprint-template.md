@@ -3,21 +3,21 @@
 > **Instruction**: Fill in all sections below. This report is designed to be parsed by an automated grading assistant. Ensure all tags (e.g., `[GROUP_NAME]`) are preserved.
 
 ## 1. Team Metadata
-- [GROUP_NAME]: 
-- [REPO_URL]: 
+- [GROUP_NAME]: D5-2
+- [REPO_URL]: https://github.com/tranxuantruongworld/C401-D5-2-Day13
 - [MEMBERS]:
-  - Member A: [Name] | Role: Logging & PII
-  - Member B: [Name] | Role: Tracing & Enrichment
+  - Member A: Trường | Role: Logging & PII
+  - Member B: Trường | Role: Tracing & Enrichment
   - Member C: [Name] | Role: SLO & Alerts
   - Member D: [Name] | Role: Load Test & Dashboard
   - Member E: [Name] | Role: Demo & Report
-
+  - Member F: [Name] | Role: blueprint + evident
 ---
 
 ## 2. Group Performance (Auto-Verified)
 - [VALIDATE_LOGS_FINAL_SCORE]: /100
 - [TOTAL_TRACES_COUNT]: 
-- [PII_LEAKS_FOUND]: 
+- [PII_LEAKS_FOUND]: 0
 
 ---
 
@@ -55,9 +55,9 @@
 
 ## 5. Individual Contributions & Evidence
 
-### [MEMBER_A_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: (Link to specific commit or PR)
+### Trần Xuân Trường
+- [TASKS_COMPLETED]: A + B
+- [EVIDENCE_LINK]: https://github.com/tranxuantruongworld/C401-D5-2-Day13/tree/ca1acbd53774c2361f137fdd0cbcc2bb6bfbe913
 
 ### [MEMBER_B_NAME]
 - [TASKS_COMPLETED]: 
