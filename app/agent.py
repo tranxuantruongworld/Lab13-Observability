@@ -7,7 +7,10 @@ from . import metrics
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
 from .pii import hash_user_id, summarize_text
-from .tracing import langfuse_context, observe
+
+# Langfuse v2.60 imports
+from langfuse import Langfuse               # ← Correct for v2
+from langfuse.decorators import langfuse_context, observe
 
 
 @dataclass
@@ -25,24 +28,43 @@ class LabAgent:
         self.model = model
         self.llm = FakeLLM(model=model)
 
+        # Initialize Langfuse client once (v2 style)
+        self.langfuse = Langfuse(
+            # It will automatically read from environment variables:
+            # LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST
+        )
+
     @observe()
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
         started = time.perf_counter()
+
         docs = retrieve(message)
         prompt = f"Feature={feature}\nDocs={docs}\nQuestion={message}"
         response = self.llm.generate(prompt)
+
         quality_score = self._heuristic_quality(message, response.text, docs)
         latency_ms = int((time.perf_counter() - started) * 1000)
-        cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
+        cost_usd = self._estimate_cost(
+            response.usage.input_tokens, 
+            response.usage.output_tokens
+        )
 
+        # Update trace and observation (v2 style)
         langfuse_context.update_current_trace(
             user_id=hash_user_id(user_id),
             session_id=session_id,
             tags=["lab", feature, self.model],
         )
+
         langfuse_context.update_current_observation(
-            metadata={"doc_count": len(docs), "query_preview": summarize_text(message)},
-            usage_details={"input": response.usage.input_tokens, "output": response.usage.output_tokens},
+            metadata={
+                "doc_count": len(docs),
+                "query_preview": summarize_text(message)
+            },
+            usage_details={
+                "input": response.usage.input_tokens,
+                "output": response.usage.output_tokens,
+            },
         )
 
         metrics.record_request(
@@ -53,7 +75,7 @@ class LabAgent:
             quality_score=quality_score,
         )
 
-        return AgentResult(
+        result = AgentResult(
             answer=response.text,
             latency_ms=latency_ms,
             tokens_in=response.usage.input_tokens,
@@ -61,6 +83,14 @@ class LabAgent:
             cost_usd=cost_usd,
             quality_score=quality_score,
         )
+
+        # === FORCE PUSH to Langfuse server (very important in Uvicorn/FastAPI) ===
+        try:
+            self.langfuse.flush()          # This pushes all pending events immediately
+        except Exception as e:
+            print(f"Warning: Failed to flush Langfuse trace: {e}")
+
+        return result
 
     def _estimate_cost(self, tokens_in: int, tokens_out: int) -> float:
         input_cost = (tokens_in / 1_000_000) * 3
@@ -73,7 +103,8 @@ class LabAgent:
             score += 0.2
         if len(answer) > 40:
             score += 0.1
-        if question.lower().split()[0:1] and any(token in answer.lower() for token in question.lower().split()[:3]):
+        if question.lower().split() and any(token in answer.lower() 
+                                           for token in question.lower().split()[:3]):
             score += 0.1
         if "[REDACTED" in answer:
             score -= 0.2
